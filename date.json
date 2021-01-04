@@ -1,0 +1,77 @@
+{
+  "type": "bubble",
+  "header": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "訪問日一覧",
+        "style": "normal",
+        "decoration": "none",
+        "align": "center",
+        "size": "20px",
+        "weight": "bold",
+        "gravity": "center",
+        "color": "#ffffff"
+      }
+    ],
+    "justifyContent": "center",
+    "alignItems": "center"
+  },
+  "hero": {
+    "type": "image",
+    "url": "https://static.amanaimages.com/imgroom/rf_preview640/11007/11007010175.jpg",
+    "size": "full",
+    "align": "end",
+    "gravity": "top",
+    "aspectMode": "cover",
+    "aspectRatio": "20:13",
+    "action": {
+      "type": "uri",
+      "label": "lab",
+      "uri": "http://www.sawada.phys.waseda.ac.jp/"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "以下の日にちから選択してください。",
+        "size": "15px"
+      },
+      {
+        "type": "text",
+        "text": "※こちら隔週月曜日の10:00頃に更新されます",
+        "size": "10px",
+        "margin": "10px",
+        "color": "#a39494"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "button",
+            "action": {
+              "type": "postback",
+              "label": "1/11 9:00~9:30",
+              "data": "1/11 9:00~9:30"
+            },
+            "color": "#ffffff"
+          }
+        ],
+        "backgroundColor": "#00ff00",
+        "margin": "20px",
+        "cornerRadius": "5px"
+      }
+    ]
+  },
+  "styles": {
+    "header": {
+      "backgroundColor": "#0B0301"
+    }
+  }
+}
