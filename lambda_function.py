@@ -7,7 +7,7 @@ dt_now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
-col = ["ユーザーID",'登録日', '時間', '名前','希望日時','メールアドレス']
+col = ["ユーザーID", '登録日', '時間', '名前', '希望日時', 'メールアドレス']
 
 
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
@@ -23,9 +23,12 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
 
-#lambdaの処理に入る
+# lambdaの処理に入る
 def lambda_handler(event, context):
-    signature = event["headers"]["X-Line-Signature"]
+    if "x-line-signature" in event["headers"]:
+        signature = event["headers"]["x-line-signature"]
+    elif "X-Line-Signature" in event["headers"]:
+        signature = event["headers"]["X-Line-Signature"]
     body = event["body"]
     ok_json = {"isBase64Encoded": False,
                "statusCode": 200,
@@ -54,8 +57,9 @@ def lambda_handler(event, context):
         profile = line_bot_api.get_profile(event.source.user_id)
         username = profile.display_name
         if text == 'その他':
-#             message=create_new(usrid,username)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="わからないことがあれば\nreiwa2020@sawada.phys.waseda.ac.jp\nまで連絡ください"))
+            #             message=create_new(usrid,username)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(
+                text="わからないことがあれば\nreiwa2020@sawada.phys.waseda.ac.jp\nまで連絡ください"))
         elif text == "日程調整がしたい":
             buttons_template = ButtonsTemplate(
                 title='研究室見学について', text='研究室見学についての調整を行います', actions=[
@@ -68,62 +72,69 @@ def lambda_handler(event, context):
             template_message = TemplateSendMessage(
                 alt_text='Buttons alt text', template=buttons_template)
             line_bot_api.reply_message(event.reply_token, template_message)
-        #メール・アドレスのときの分岐
+        # メール・アドレスのときの分岐
         elif "@" in text:
-            message = get_mail(text,username)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
+            message = get_mail(text, username)
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text=message))
         else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='下のメニューから選択してください'))
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text='下のメニューから選択してください'))
 
+    # 日程調整の際のボタンの選択により分岐
 
-    #日程調整の際のボタンの選択により分岐
     @handler.add(PostbackEvent)
     def handle_postback(event):
         usrid = event.source.user_id
         profile = line_bot_api.get_profile(event.source.user_id)
-        username =  profile.display_name
+        username = profile.display_name
         data = event.postback.data
 
-        #startが押された際の登録 裏コマンド的な
+        # startが押された際の登録 裏コマンド的な
         if data == 'start':
             buttons_template = ButtonsTemplate(
                 title='My buttons sample', text='確認です。', actions=[
                     # startというデータのpostbackeventを発行
                     PostbackAction(label='start', data='start'),
                     PostbackAction(label='end', data='end'),
-                    DatetimePickerAction(label='show', data='show', mode="datetime"),
+                    DatetimePickerAction(
+                        label='show', data='show', mode="datetime"),
                     PostbackAction(label='del', data='del'),
                 ])
             template_message = TemplateSendMessage(
                 alt_text='Buttons alt text', template=buttons_template)
             line_bot_api.reply_message(event.reply_token, template_message)
 
-        #日程調整が押されたときの分岐
+        # 日程調整が押されたときの分岐
         elif data == '日程':
             with open('./date.json') as f:
                 date_message = json.load(f)
             line_bot_api.reply_message(
                 event.reply_token,
-                #alt_textがないとエラーになるので注意
+                # alt_textがないとエラーになるので注意
                 FlexSendMessage(alt_text='訪問日', contents=date_message)
             )
 
-        #まずは登録を押された際の分岐
+        # まずは登録を押された際の分岐
         elif data == "まずは登録":
-            message = create_new(usrid,username)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
+            message = create_new(usrid, username)
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text=message))
 
-        #日程が押された際の分岐 dataに〜を含むのは日程のみ
+        # 日程が押された際の分岐 dataに〜を含むのは日程のみ
         elif "~" in data:
-            message=get_date(data,username)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
+            message = get_date(data, username)
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text=message))
 
         elif data == 'メールアドレス':
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="メール・アドレスを登録してください"))
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text="メール・アドレスを登録してください"))
 
         elif data == '確認':
             message = show_user(username)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text=message))
     try:
         handler.handle(body, signature)
     except LineBotApiError as e:
