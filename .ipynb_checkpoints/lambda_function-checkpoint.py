@@ -1,7 +1,7 @@
 from component import *
 
 # 期間内, 期間外を設定する変数
-inner_date = True
+inner_date = False
 
 BUCKET_NAME = "pypy-test"
 KEY = "kenken.csv"
@@ -56,9 +56,11 @@ def lambda_handler(event, context):
             userid = event.source.user_id
             profile = line_bot_api.get_profile(event.source.user_id)
             username = profile.display_name
-
+            
+            
         # ---------------------- メニューが選択されたときの処理 ----------------------
-
+        
+        
             if text == 'その他':
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(
                     text="わからないことがあれば\nreiwa2020@sawada.phys.waseda.ac.jp\nまで連絡ください"))
@@ -81,12 +83,13 @@ def lambda_handler(event, context):
                 message = get_mail(text, username, userid)
                 line_bot_api.reply_message(
                     event.reply_token, TextSendMessage(text=message))
-
+            
             # メニュー以外に個別のメッセージが送られてきた時
             else:
                 line_bot_api.reply_message(
                     event.reply_token, TextSendMessage(text='個別にメッセージにお答えすることができません。\n下のメニューより選択して下さい。'))
-
+                
+                
         # ---------------------- メニューが選択されたときの処理END ----------------------
 
         # ---------------------- 日程調整の際のボタンの選択により分岐 -------------------------
@@ -143,16 +146,18 @@ def lambda_handler(event, context):
                 message = show_user(username, userid)
                 line_bot_api.reply_message(
                     event.reply_token, TextSendMessage(text=message))
-
+                
             # ---------------------- 日程調整の際のボタンの選択により分岐END -------------------------
-
+                
     # 期間外のときの処理
     elif inner_date == False:
         @handler.add(MessageEvent, message=TextMessage)
         def handle_text_message(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(
-                text="只今研究室見学の対象期間ではありませんので予約をすることができません。(再開: 冬頃予定)"))
-
+                    text="只今研究室見学の対象期間ではありませんので予約をすることができません。(再開: 冬頃予定)"))
+        
+    
+    
     # この記述がないとhandler is not　のエラーになる
     try:
         handler.handle(body, signature)

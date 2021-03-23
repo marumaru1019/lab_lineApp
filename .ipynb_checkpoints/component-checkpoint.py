@@ -22,7 +22,7 @@ from linebot.models import *
 
 
 # lineが登録されたときに行われるイベント
-def create_new(username, userid):
+def create_new(username, usrid):
     # lineのユーザー情報を登録する
     s3 = boto3.client('s3')
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY)
@@ -31,16 +31,16 @@ def create_new(username, userid):
     df = pd.read_csv(StringIO(csv_string))
 
     # ユーザーIDがある場合は登録を拒否
-    if userid in list(df["ユーザーID"]):
+    if usrid in list(df["ユーザーID"]):
         dupiricate_message = "すでに{}様は澤田研究室の見学名簿に登録されています。\n確認から名簿があるか確認してみてください。".format(
             username)
         return dupiricate_message
 
     # ユーザーIDがない場合には登録を許可
-    elif userid not in list(df["ユーザーID"]):
+    elif usrid not in list(df["ユーザーID"]):
         # 取得したユーザー情報を元にcsvを更新
         s3_resource = boto3.resource('s3')
-        new_dt = pd.DataFrame([[userid, dt_now.strftime(
+        new_dt = pd.DataFrame([[usrid, dt_now.strftime(
             '%Y/%m/%d'), dt_now.strftime('%H:%M'), username, "", ""]], columns=col)
         df2 = df.append(new_dt, ignore_index=True)
 
@@ -54,7 +54,7 @@ def create_new(username, userid):
 
 
 # 日付を獲得する処理
-def get_date(date_str, username, userid):
+def get_date(date_str, username, usrid):
     # lineのユーザー情報を登録する
     s3 = boto3.client('s3')
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY)
@@ -202,16 +202,16 @@ def create_new(username, userid):
     df = pd.read_csv(StringIO(csv_string))
 
     # ユーザーIDがある場合は登録を拒否
-    if userid in list(df["ユーザーID"]):
+    if usrid in list(df["ユーザーID"]):
         dupiricate_message = "すでに{}様は澤田研究室の見学名簿に登録されています。\n確認から名簿があるか確認してみてください。".format(
             username)
         return dupiricate_message
 
     # ユーザーIDがない場合には登録を許可
-    elif userid not in list(df["ユーザーID"]):
+    elif usrid not in list(df["ユーザーID"]):
         # 取得したユーザー情報を元にcsvを更新
         s3_resource = boto3.resource('s3')
-        new_dt = pd.DataFrame([[userid, dt_now.strftime(
+        new_dt = pd.DataFrame([[usrid, dt_now.strftime(
             '%Y/%m/%d'), dt_now.strftime('%H:%M'), username, "", ""]], columns=col)
         df2 = df.append(new_dt, ignore_index=True)
 
@@ -331,9 +331,10 @@ def show_user(username, userid):
 
 で登録いただいております。
 訂正したい場合、再度日程またはメールアドレスから上書きを行ってください。
-'''.format(username, df_user["希望日時"][0].replace("T", " "), df_user["メールアドレス"][0])
+'''.format(df_user["名前"][0], df_user["希望日時"][0].replace("T", " "), df_user["メールアドレス"][0])
         return shere
     # ユーザーネームがない場合
     else:
         fail_text = "{}様は澤田研究室に登録されていません\n登録し直してください".format(username)
         return fail_text
+
