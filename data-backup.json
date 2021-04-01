@@ -57,44 +57,8 @@
             "type": "button",
             "action": {
               "type": "postback",
-              "label": "4/25 9:00~9:30",
-              "data": "4/25 9:00~9:30"
-            },
-            "color": "#ffffff"
-          }
-        ],
-        "backgroundColor": "#00ff00",
-        "margin": "20px",
-        "cornerRadius": "5px"
-      },
-      {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-          {
-            "type": "button",
-            "action": {
-              "type": "postback",
-              "label": "5/3 9:00~9:30",
-              "data": "5/3 9:00~9:30"
-            },
-            "color": "#ffffff"
-          }
-        ],
-        "backgroundColor": "#00ff00",
-        "margin": "20px",
-        "cornerRadius": "5px"
-      },
-      {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-          {
-            "type": "button",
-            "action": {
-              "type": "postback",
-              "label": "5/10 9:00~9:30",
-              "data": "5/10 9:00~9:30"
+              "label": "1/11 9:00~9:30",
+              "data": "1/11 9:00~9:30"
             },
             "color": "#ffffff"
           }
